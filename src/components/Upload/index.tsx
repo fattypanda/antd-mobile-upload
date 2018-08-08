@@ -8,6 +8,7 @@ import Button from 'antd-mobile/lib/button';
 import ListItemFile from './ListItemFile';
 
 import { RcUploadProps, UploadProps, RcFile, UFiles, UFile } from './PropsType';
+import { PercentStatus } from './enum';
 
 import _omit from 'lodash/omit';
 import _set from 'lodash/set';
@@ -32,12 +33,7 @@ const exclude: Array<string> = [
   'files', 'onRemove', 'onClickFile', 'List', 'ListItemFile'
 ];
 
-enum PercentStatus {
-  Ready = 'ready',
-  Uploading = 'uploading',
-  Done = 'done',
-  Error = 'error'
-};
+
 
 export default class Upload extends React.Component<RcUploadProps, UploadProps, any> {
 

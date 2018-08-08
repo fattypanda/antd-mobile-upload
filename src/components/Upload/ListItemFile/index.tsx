@@ -5,6 +5,7 @@ import Icon from 'antd-mobile/lib/icon';
 import { ListItemFileProps, UFile } from '../PropsType';
 
 import _isFunction from 'lodash/isFunction';
+import cs from 'classnames';
 
 export default class ListItemFile extends React.PureComponent<UFile, ListItemFileProps, any> {
 
@@ -30,10 +31,12 @@ export default class ListItemFile extends React.PureComponent<UFile, ListItemFil
 
   render () {
     const file = this.props;
-    const { uid, name } = file;
+    const { uid, name, status } = file;
+
     return (
       <ListItem
         key={uid}
+        thumb={<div className={cs('am-upload-annex', { [status]: !!status })}/>}
         extra={<Icon onClick={(e: Event) => this.onRemove(file, e)} type={'cross'} size={'xs'} />}
         onClick={(e: Event) => this.onClickFile(file, e)}
       >

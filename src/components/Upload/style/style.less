@@ -1,5 +1,30 @@
 :global(.antd-mobile-upload) {
 
+  :global(.am-upload-annex) {
+    width: 18px;
+    height: 18px;
+    background-size: auto 100%;
+    background-position: center center;
+    background-repeat: no-repeat;
+
+    &:global(.ready) {
+      background-image: url('../ListItemFile/annex.ready.png');
+    }
+
+    &:global(.uploading) {
+      background-image: url('../ListItemFile/annex.uploading.png');
+    }
+
+    &:global(.done) {
+      background-image: url('../ListItemFile/annex.done.png');
+    }
+
+    &:global(.error) {
+      background-image: url('../ListItemFile/annex.error.png');
+    }
+
+  }
+
   :global(.am-list-item) {
 
     :global(.am-list-line) {

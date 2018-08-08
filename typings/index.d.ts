@@ -19,3 +19,5 @@ declare module 'rc-upload';
 
 declare module 'lodash';
 declare module 'lodash/*';
+
+declare module 'classnames';

@@ -8,6 +8,7 @@
   },
   "dependencies": {
     "antd-mobile": "^2.2.2",
+    "classnames": "^2.2.6",
     "lodash": "^4.17.10",
     "rc-upload": "^2.5.1",
     "react": "^16.4.2",
