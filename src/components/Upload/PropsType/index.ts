@@ -27,4 +27,6 @@ export interface ListItemFileProps {
 
 export interface UploadProps extends ListItemFileProps {
   files?: UFiles;
+
+  beforeUpload?: (file: RcFile, files: Array<RcFile>, defaultAction: () => never) => void;
 }
