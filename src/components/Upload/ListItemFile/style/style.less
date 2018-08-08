@@ -1,0 +1,24 @@
+:global(.am-upload-annex) {
+  width: 18px;
+  height: 18px;
+  background-size: auto 100%;
+  background-position: center center;
+  background-repeat: no-repeat;
+
+  &:global(.ready) {
+    background-image: url('../annex.ready.png');
+  }
+
+  &:global(.uploading) {
+    background-image: url('../annex.uploading.png');
+  }
+
+  &:global(.done) {
+    background-image: url('../annex.done.png');
+  }
+
+  &:global(.error) {
+    background-image: url('../annex.error.png');
+  }
+
+}

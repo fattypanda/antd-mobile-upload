@@ -7,6 +7,8 @@ import { ListItemFileProps, UFile } from '../PropsType';
 import _isFunction from 'lodash/isFunction';
 import cs from 'classnames';
 
+import './style';
+
 export default class ListItemFile extends React.PureComponent<UFile, ListItemFileProps, any> {
 
   onRemove = (file: UFile, e: Event) => {
