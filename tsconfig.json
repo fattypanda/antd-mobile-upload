@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "strictNullChecks": true,
+    "moduleResolution": "node",
+    "experimentalDecorators": true,
+    "jsx": "preserve",
+    "noUnusedParameters": true,
+    "noUnusedLocals": true,
+    "noImplicitAny": true,
+    "target": "es6",
+    "baseUrl": "./",
+    "paths": {
+      "src": ["src/*"]
+    },
+    "lib": [
+      "dom",
+      "es7"
+    ]
+  },
+  "exclude": [
+    "node_modules",
+    "lib",
+    "es"
+  ]
+}
