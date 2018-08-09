@@ -14,3 +14,4 @@ npm-debug.log*
 .umi
 .umi-production
 .idea/
+server/upload/
