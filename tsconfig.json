@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
     "strictNullChecks": true,
-    "moduleResolution": "node",
+    "moduleResolution": "none",
     "experimentalDecorators": true,
-    "jsx": "preserve",
+    "jsx": "React",
     "noUnusedParameters": true,
     "noUnusedLocals": true,
     "noImplicitAny": true,
@@ -12,10 +12,13 @@
     "paths": {
       "src": ["src/*"]
     },
+    "declaration": true,
+    "declarationDir": "./types",
     "lib": [
       "dom",
       "es7"
-    ]
+    ],
+    "types": ["classnames"]
   },
   "exclude": [
     "node_modules",

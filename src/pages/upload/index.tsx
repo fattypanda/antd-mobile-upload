@@ -5,7 +5,7 @@ export default class PageUpload extends React.PureComponent<any> {
 
   render () {
     return (
-      <Upload />
+      <Upload multiple action={'/api/upload'} />
     );
   }
 }

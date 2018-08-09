@@ -7,5 +7,14 @@ export default {
   ],
   alias: {
     src: resolve(__dirname, 'src'),
+  },
+  proxy: {
+    '/api': {
+      target: 'http://localhost:9090/',
+      changeOrigin: true,
+      pathRewrite: {
+        '^/api': '',
+      }
+    }
   }
 }
