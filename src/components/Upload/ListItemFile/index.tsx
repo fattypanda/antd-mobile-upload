@@ -9,6 +9,8 @@ import cs from 'classnames';
 
 import './style';
 
+const Fragment = React.Fragment;
+
 export default class ListItemFile extends React.PureComponent<UFile, ListItemFileProps, any> {
 
   onRemove = (file: UFile, e: Event) => {
@@ -33,13 +35,18 @@ export default class ListItemFile extends React.PureComponent<UFile, ListItemFil
 
   render () {
     const file = this.props;
-    const { uid, name, status } = file;
+    const { uid, name, status, percent } = file;
 
     return (
       <ListItem
         key={uid}
         thumb={<div className={cs('am-upload-annex', { [status]: !!status })}/>}
-        extra={<Icon onClick={(e: Event) => this.onRemove(file, e)} type={'cross'} size={'xs'} />}
+        extra={
+          <Fragment>
+            {percent < 100 && `${parseInt(percent.toString())}% `}
+            <Icon onClick={(e: Event) => this.onRemove(file, e)} type={'cross'} size={'xs'} />
+          </Fragment>
+}
         onClick={(e: Event) => this.onClickFile(file, e)}
       >
         {name}

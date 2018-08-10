@@ -1,3 +1,7 @@
+export interface RcFile extends File {
+  uid?: string;
+}
+
 interface noop {
   (): void;
 }
@@ -21,7 +25,7 @@ interface onSuccess {
 }
 
 interface onProgress {
-  (event: { percent: number }): void;
+  (event: ProgressEvent, file: RcFile): void;
 }
 
 export default interface RcUploadProps {

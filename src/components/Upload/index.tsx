@@ -38,16 +38,13 @@ const exclude: Array<string> = [
   'files', 'onRemove', 'onClickFile', 'List', 'ListItemFile'
 ];
 
-
-
 export default class Upload extends React.Component<UploadProps> {
 
   constructor(props) {
     super(...arguments);
 
-    this.state = {
-      files: this.completionFiles(props.files) || [],
-    }
+    const files: UFiles = this.completionFiles(props.files) || [];
+    this.state = { files }
   }
 
   static defaultProps = {
@@ -58,6 +55,7 @@ export default class Upload extends React.Component<UploadProps> {
     files: [],
     onRemove: null,
     onClickFile: null,
+    onChange: null,
 
     getSuccessFileUrl: (res: Response): string => {
       const { ret: { url = '' } = {}} = res;
@@ -71,8 +69,12 @@ export default class Upload extends React.Component<UploadProps> {
   //  补全文件格式
   completionFiles = (files: UFiles): UFiles => {
     return (files as Array).map((file: UFile) => {
-      const { uid } = file;
+      const { uid, url, name, status } = file;
       !uid && _set(file, 'uid', _uniqueId(`upload-${new Date().getTime()}-`));
+      if (url) {
+        !status && _set(file, 'status', PercentStatus.Done);
+        !name && _set(file, 'name', url.split('/').pop());
+      }
       return file;
     });
   };
@@ -107,9 +109,9 @@ export default class Upload extends React.Component<UploadProps> {
   };
 
   //  上传错误的处理
-  onError = (err: Error, response: Response, file: RcFile): void => {
+  onError = async (err: Error, response: Response, file: RcFile): void => {
     if (file.uid) {
-      this.setState(state => ({
+      await this.setState(state => ({
         ...state,
         files: _map(state.files, (file: UFile) => {
           const { uid = null } = file;
@@ -121,16 +123,16 @@ export default class Upload extends React.Component<UploadProps> {
       }));
     }
     if(_isFunction(this.props.onError)) {
-      this.props.onError(err, response, file);
+      await this.props.onError(err, response, file);
     }
+    await this.onChange();
   };
 
   //  上传成功的处理
-  onSuccess = (res: Response, file: RcFile, xhr: XMLHttpRequest): void => {
+  onSuccess = async (res: Response, file: RcFile, xhr: XMLHttpRequest): void => {
     if (file.uid) {
       const url = this.getSuccessFileUrl(res);
-      console.log(res, url);
-      this.setState(state => ({
+      await this.setState(state => ({
         ...state,
         files: _map(state.files, (file: UFile) => {
           const { uid = null } = file;
@@ -145,14 +147,41 @@ export default class Upload extends React.Component<UploadProps> {
       }));
     }
     if(_isFunction(this.props.onSuccess)) {
-      this.props.onSuccess(res, file, xhr);
+      await this.props.onSuccess(res, file, xhr);
     }
+    await this.onChange();
   };
 
   //  获取上传成功之后返回的 URL
   getSuccessFileUrl = (res: Response): string => {
     if(_isFunction(this.props.getSuccessFileUrl)) {
       return this.props.getSuccessFileUrl(res);
+    }
+  };
+
+  //  上传进度的处理
+  onProgress = (event: ProgressEvent, file: RcFile): void => {
+    if (file.uid) {
+      const { percent = 0 } = event;
+      this.setState(state => ({
+        ...state,
+        files: _map(state.files, (file: UFile) => {
+          const { uid = null } = file;
+          if (uid === file.uid && percent) {
+            _set(file, 'percent', percent);
+          }
+          return file;
+        })
+      }));
+    }
+    if(_isFunction(this.props.onProgress)) {
+      this.props.onProgress(event, file);
+    }
+  };
+
+  onChange = async ():void => {
+    if(_isFunction(this.props.onChange)) {
+      await this.props.onChange(this.state.files);
     }
   };
 
@@ -188,6 +217,7 @@ export default class Upload extends React.Component<UploadProps> {
             beforeUpload={this.beforeUpload}
             onError={this.onError}
             onSuccess={this.onSuccess}
+            onProgress={this.onProgress}
           />
         </List>
       </div>

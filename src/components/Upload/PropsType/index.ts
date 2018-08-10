@@ -1,17 +1,17 @@
-import RcUploadProps from './RcUploadProps';
+import RcUploadProps, { RcFile } from './RcUploadProps';
+import { PercentStatus } from '../enum';
 
 export {
-  RcUploadProps
-}
-
-export interface RcFile extends File {
-  uid?: string;
+  RcUploadProps,
+  RcFile
 }
 
 export interface UFile {
   name: string;
   uid: string;
   url?: string;
+  status?: PercentStatus;
+  percent?: number;
   file?: RcFile;
 }
 
@@ -31,4 +31,6 @@ export interface UploadProps extends ListItemFileProps, RcUploadProps {
   beforeUpload?: (file: RcFile, files: Array<RcFile>, defaultAction: () => never) => void;
 
   getSuccessFileUrl?: (res: Response) => string;
+
+  onChange: (files: Array<UFile>) => void;
 }
