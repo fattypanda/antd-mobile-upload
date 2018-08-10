@@ -12,6 +12,7 @@ import { PercentStatus } from './enum';
 
 import _omit from 'lodash/omit';
 import _set from 'lodash/set';
+import _map from 'lodash/map';
 import _uniqueId from 'lodash/uniqueId';
 import _isFunction from 'lodash/isFunction';
 
@@ -26,6 +27,10 @@ const extra: any = (
     上传
   </Button>
 );
+
+const error = (message: string): never => {
+  throw new Error(message);
+}
 
 const children: any = (<ListItem extra={extra}>{''}</ListItem>);
 
@@ -59,7 +64,7 @@ export default class Upload extends React.Component<RcUploadProps, UploadProps, 
   };
 
   //  补全文件格式
-  completionFiles = (files: UFiles) => {
+  completionFiles = (files: UFiles): UFiles => {
     return (files as Array).map((file: UFile) => {
       const { uid } = file;
       !uid && _set(file, 'uid', _uniqueId(`upload-${new Date().getTime()}-`));
@@ -68,7 +73,7 @@ export default class Upload extends React.Component<RcUploadProps, UploadProps, 
   };
 
   //  上传前的默认行为
-  beforeUploadAction = (file: RcFile) => {
+  beforeUploadAction = (file: RcFile): void => {
     this.isMatchLimit();
     this.isMatchSize(file);
 
@@ -87,29 +92,48 @@ export default class Upload extends React.Component<RcUploadProps, UploadProps, 
   };
 
   //  上传前的处理
-  beforeUpload = (file: RcFile, files: Array<RcFile>) => {
+  beforeUpload = (file: RcFile, files: Array<RcFile>): void|boolean => {
     const { beforeUpload = null } = this.props;
     if (_isFunction(beforeUpload)) {
       return (beforeUpload as Function)(file, files, this.beforeUploadAction);
     } else {
-      return this.beforeUploadAction(file);
+      return (this.beforeUploadAction(file) as Boolean);
+    }
+  };
+
+  //  上传错误的处理
+  onError = (err: Error, response: Response, file: RcFile): void => {
+    if (file.uid) {
+      this.setState(state => ({
+        ...state,
+        files: _map(state.files, (file: UFile) => {
+          const { uid = null } = file;
+          if (uid === file.uid) {
+            _set(file, 'status', PercentStatus.Error);
+          }
+          return file;
+        })
+      }));
+    }
+    if(_isFunction(this.props.onError)) {
+      this.props.onError(err, response, file);
     }
   };
 
   //  是否超出文件大小
-  isMatchSize = (file: RcFile) => {
+  isMatchSize = (file: RcFile): void => {
     const { size = null } = this.props;
     if (size && file.size > size) {
-      throw new Error('超出上传文件大小！');
+      error('超出上传文件大小！');
     }
   };
 
   //  是否超出文件总数
-  isMatchLimit = () => {
+  isMatchLimit = (): void => {
     const { files = [] } = this.state;
     const { limit = null } = this.props;
     if (limit && ((files as Array).length + 2) > limit) {
-      throw new Error('超出上传文件总数！');
+      error('超出上传文件总数！');
     }
   };
 
@@ -126,6 +150,7 @@ export default class Upload extends React.Component<RcUploadProps, UploadProps, 
           <RcUpload
             {...rcUploadProps}
             beforeUpload={this.beforeUpload}
+            onError={this.onError}
           />
         </List>
       </div>
