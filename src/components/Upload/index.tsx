@@ -7,7 +7,7 @@ import Button from 'antd-mobile/lib/button';
 
 import ListItemFile from './ListItemFile';
 
-import { RcUploadProps, UploadProps, RcFile, UFiles, UFile } from './PropsType';
+import { UploadProps, RcFile, UFiles, UFile } from './PropsType';
 import { PercentStatus } from './enum';
 
 import _omit from 'lodash/omit';
@@ -40,7 +40,7 @@ const exclude: Array<string> = [
 
 
 
-export default class Upload extends React.Component<RcUploadProps, UploadProps, any> {
+export default class Upload extends React.Component<UploadProps> {
 
   constructor(props) {
     super(...arguments);
@@ -58,6 +58,11 @@ export default class Upload extends React.Component<RcUploadProps, UploadProps, 
     files: [],
     onRemove: null,
     onClickFile: null,
+
+    getSuccessFileUrl: (res: Response): string => {
+      const { ret: { url = '' } = {}} = res;
+      return url;
+    },
 
     // List,
     // ListItemFile,
@@ -120,6 +125,37 @@ export default class Upload extends React.Component<RcUploadProps, UploadProps, 
     }
   };
 
+  //  上传成功的处理
+  onSuccess = (res: Response, file: RcFile, xhr: XMLHttpRequest): void => {
+    if (file.uid) {
+      const url = this.getSuccessFileUrl(res);
+      console.log(res, url);
+      this.setState(state => ({
+        ...state,
+        files: _map(state.files, (file: UFile) => {
+          const { uid = null } = file;
+          if (uid === file.uid) {
+            _set(file, 'status', PercentStatus.Done);
+            if (url) {
+              _set(file, 'url', url);
+            }
+          }
+          return file;
+        })
+      }));
+    }
+    if(_isFunction(this.props.onSuccess)) {
+      this.props.onSuccess(res, file, xhr);
+    }
+  };
+
+  //  获取上传成功之后返回的 URL
+  getSuccessFileUrl = (res: Response): string => {
+    if(_isFunction(this.props.getSuccessFileUrl)) {
+      return this.props.getSuccessFileUrl(res);
+    }
+  };
+
   //  是否超出文件大小
   isMatchSize = (file: RcFile): void => {
     const { size = null } = this.props;
@@ -151,6 +187,7 @@ export default class Upload extends React.Component<RcUploadProps, UploadProps, 
             {...rcUploadProps}
             beforeUpload={this.beforeUpload}
             onError={this.onError}
+            onSuccess={this.onSuccess}
           />
         </List>
       </div>

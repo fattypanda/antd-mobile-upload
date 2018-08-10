@@ -42,7 +42,7 @@ export default interface RcUploadProps {
   onError?: onError;
   onSuccess?: onSuccess;
   onProgress?: onProgress;
-  beforeUpload?: noop|null;
+  // beforeUpload?: noop|null;
   customRequest?: noop|null;
   withCredentials?: boolean;
 }
