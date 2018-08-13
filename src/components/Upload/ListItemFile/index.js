@@ -11,20 +11,14 @@ import './style';
 export default class ListItemFile extends PureComponent {
 
   onRemove = (file = {}, e = {}) => {
-    e.stopPropagation();
     if (_isFunction(this.props.onRemove)) {
       this.props.onRemove(file, e);
     }
   };
 
   onClickFile = (file = {}, e = {}) => {
-    const { url } = file;
-    e.stopPropagation();
-    const open = _isFunction(this.props.onClickFile)? this.props.onClickFile: window.open;
-    if (url) {
-      open(file.url);
-    } else {
-      console.warn('url is null!');
+    if (_isFunction(this.props.onClickFile)) {
+      this.props.onClickFile(file, e);
     }
   };
 

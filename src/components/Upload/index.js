@@ -151,6 +151,7 @@ export default class Upload extends Component {
 
   //  点击删除的回调
   onRemove = async (file = {}, e = {}) => {
+    e.stopPropagation();
     const { uid = null } = file;
     if (uid) {
       const files = _remove(this.state.files, file => file.uid !== uid);
@@ -159,6 +160,18 @@ export default class Upload extends Component {
       if (_isFunction(this.props.onRemove)) {
         this.props.onRemove(file, e);
       }
+    }
+  };
+
+  //  点击文件的回调
+  onClickFile = (file = {}, e = {}) => {
+    const { url } = file;
+    e.stopPropagation();
+    const open = _isFunction(this.props.onClickFile)? this.props.onClickFile: window.open;
+    if (url) {
+      open(file.url);
+    } else {
+      console.warn('url is null!');
     }
   };
 
