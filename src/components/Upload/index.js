@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { Component } from 'react';
 
 import RcUpload from 'rc-upload';
 import List from 'antd-mobile/lib/list';
@@ -7,7 +7,6 @@ import Button from 'antd-mobile/lib/button';
 
 import ListItemFile from './ListItemFile';
 
-import { UploadProps, RcFile, UFiles, UFile } from './PropsType';
 import { PercentStatus } from './enum';
 
 import _omit from 'lodash/omit';
@@ -16,34 +15,20 @@ import _map from 'lodash/map';
 import _uniqueId from 'lodash/uniqueId';
 import _isFunction from 'lodash/isFunction';
 
-import './style';
+import './style/index';
 
-const extra: any = (
-  <Button
-    size={'small'}
-    type={'primary'}
-    onClick={(e: Event) => e.target.click()}
-  >
-    上传
-  </Button>
-);
+const extra = (<Button size={'small'} type={'primary'} onClick={e => e.target.click()}>上传</Button>);
+const children = (<ListItem extra={extra}>{''}</ListItem>);
 
-const error = (message: string): never => {
-  throw new Error(message);
-}
+const error = message => { throw new Error(message) };
+const exclude = ['files', 'onRemove', 'onClickFile', 'List', 'ListItemFile'];
 
-const children: any = (<ListItem extra={extra}>{''}</ListItem>);
-
-const exclude: Array<string> = [
-  'files', 'onRemove', 'onClickFile', 'List', 'ListItemFile'
-];
-
-export default class Upload extends React.Component<UploadProps> {
+export default class Upload extends Component {
 
   constructor(props) {
     super(...arguments);
 
-    const files: UFiles = this.completionFiles(props.files) || [];
+    const files = this.completionFiles(props.files) || [];
     this.state = { files }
   }
 
@@ -57,8 +42,8 @@ export default class Upload extends React.Component<UploadProps> {
     onClickFile: null,
     onChange: null,
 
-    getSuccessFileUrl: (res: Response): string => {
-      const { ret: { url = '' } = {}} = res;
+    getSuccessFileUrl: res => {
+      const { ret: { url = '' } = {}} = res || {};
       return url;
     },
 
@@ -67,8 +52,8 @@ export default class Upload extends React.Component<UploadProps> {
   };
 
   //  补全文件格式
-  completionFiles = (files: UFiles): UFiles => {
-    return (files as Array).map((file: UFile) => {
+  completionFiles = (files = []) => {
+    return files.map((file = {}) => {
       const { uid, url, name, status } = file;
       !uid && _set(file, 'uid', _uniqueId(`upload-${new Date().getTime()}-`));
       if (url) {
@@ -80,7 +65,7 @@ export default class Upload extends React.Component<UploadProps> {
   };
 
   //  上传前的默认行为
-  beforeUploadAction = (file: RcFile): void => {
+  beforeUploadAction = (file = {}) => {
     this.isMatchLimit();
     this.isMatchSize(file);
 
@@ -99,21 +84,21 @@ export default class Upload extends React.Component<UploadProps> {
   };
 
   //  上传前的处理
-  beforeUpload = (file: RcFile, files: Array<RcFile>): void|boolean => {
+  beforeUpload = (file = {}, files = []) => {
     const { beforeUpload = null } = this.props;
     if (_isFunction(beforeUpload)) {
-      return (beforeUpload as Function)(file, files, this.beforeUploadAction);
+      return beforeUpload(file, files, this.beforeUploadAction);
     } else {
-      return (this.beforeUploadAction(file) as Boolean);
+      return this.beforeUploadAction(file);
     }
   };
 
   //  上传错误的处理
-  onError = async (err: Error, response: Response, file: RcFile): void => {
+  onError = async (err = {}, response = {}, file = {}) => {
     if (file.uid) {
       await this.setState(state => ({
         ...state,
-        files: _map(state.files, (file: UFile) => {
+        files: _map(state.files, (file = {}) => {
           const { uid = null } = file;
           if (uid === file.uid) {
             _set(file, 'status', PercentStatus.Error);
@@ -129,12 +114,12 @@ export default class Upload extends React.Component<UploadProps> {
   };
 
   //  上传成功的处理
-  onSuccess = async (res: Response, file: RcFile, xhr: XMLHttpRequest): void => {
+  onSuccess = async (res = {}, file = {}, xhr = {}) => {
     if (file.uid) {
       const url = this.getSuccessFileUrl(res);
       await this.setState(state => ({
         ...state,
-        files: _map(state.files, (file: UFile) => {
+        files: _map(state.files, (file = {}) => {
           const { uid = null } = file;
           if (uid === file.uid) {
             _set(file, 'status', PercentStatus.Done);
@@ -153,19 +138,19 @@ export default class Upload extends React.Component<UploadProps> {
   };
 
   //  获取上传成功之后返回的 URL
-  getSuccessFileUrl = (res: Response): string => {
+  getSuccessFileUrl = (res = {}) => {
     if(_isFunction(this.props.getSuccessFileUrl)) {
       return this.props.getSuccessFileUrl(res);
     }
   };
 
   //  上传进度的处理
-  onProgress = (event: ProgressEvent, file: RcFile): void => {
+  onProgress = (event = {}, file = {}) => {
     if (file.uid) {
       const { percent = 0 } = event;
       this.setState(state => ({
         ...state,
-        files: _map(state.files, (file: UFile) => {
+        files: _map(state.files, (file = {}) => {
           const { uid = null } = file;
           if (uid === file.uid && percent) {
             _set(file, 'percent', percent);
@@ -179,14 +164,15 @@ export default class Upload extends React.Component<UploadProps> {
     }
   };
 
-  onChange = async ():void => {
+  //  上传完成后的回调
+  onChange = async () => {
     if(_isFunction(this.props.onChange)) {
       await this.props.onChange(this.state.files);
     }
   };
 
   //  是否超出文件大小
-  isMatchSize = (file: RcFile): void => {
+  isMatchSize = (file = {}) => {
     const { size = null } = this.props;
     if (size && file.size > size) {
       error('超出上传文件大小！');
@@ -194,10 +180,10 @@ export default class Upload extends React.Component<UploadProps> {
   };
 
   //  是否超出文件总数
-  isMatchLimit = (): void => {
+  isMatchLimit = () => {
     const { files = [] } = this.state;
     const { limit = null } = this.props;
-    if (limit && ((files as Array).length + 2) > limit) {
+    if (limit && (files.length + 2) > limit) {
       error('超出上传文件总数！');
     }
   };
@@ -209,7 +195,7 @@ export default class Upload extends React.Component<UploadProps> {
     return (
       <div className={'antd-mobile-upload'}>
         <List>
-          {Array.isArray(files) && (files as Array).map((file: UFile, index: number) => {
+          {Array.isArray(files) && files.map((file = {}, index) => {
             return (<ListItemFile {...file} key={index}/>);
           })}
           <RcUpload
