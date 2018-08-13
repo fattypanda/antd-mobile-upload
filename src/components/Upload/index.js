@@ -2,12 +2,11 @@ import React, { Component } from 'react';
 
 import RcUpload from 'rc-upload';
 import List from 'antd-mobile/lib/list';
-import ListItem from 'antd-mobile/lib/list/ListItem';
-import Button from 'antd-mobile/lib/button';
-
 import ListItemFile from './ListItemFile';
 
 import { PercentStatus } from './enum';
+import propTypes from './propTypes';
+import defaultProps from './defaultProps';
 
 import _omit from 'lodash/omit';
 import _set from 'lodash/set';
@@ -16,9 +15,6 @@ import _uniqueId from 'lodash/uniqueId';
 import _isFunction from 'lodash/isFunction';
 
 import './style/index';
-
-const extra = (<Button size={'small'} type={'primary'} onClick={e => e.target.click()}>上传</Button>);
-const children = (<ListItem extra={extra}>{''}</ListItem>);
 
 const error = message => { throw new Error(message) };
 const exclude = ['files', 'onRemove', 'onClickFile', 'List', 'ListItemFile'];
@@ -31,25 +27,6 @@ export default class Upload extends Component {
     const files = this.completionFiles(props.files) || [];
     this.state = { files }
   }
-
-  static defaultProps = {
-    children,
-
-    size: null,
-    limit: null,
-    files: [],
-    onRemove: null,
-    onClickFile: null,
-    onChange: null,
-
-    getSuccessFileUrl: res => {
-      const { ret: { url = '' } = {}} = res || {};
-      return url;
-    },
-
-    // List,
-    // ListItemFile,
-  };
 
   //  补全文件格式
   completionFiles = (files = []) => {
@@ -110,7 +87,7 @@ export default class Upload extends Component {
     if(_isFunction(this.props.onError)) {
       await this.props.onError(err, response, file);
     }
-    await this.onChange();
+    await this.onComplete();
   };
 
   //  上传成功的处理
@@ -134,7 +111,7 @@ export default class Upload extends Component {
     if(_isFunction(this.props.onSuccess)) {
       await this.props.onSuccess(res, file, xhr);
     }
-    await this.onChange();
+    await this.onComplete();
   };
 
   //  获取上传成功之后返回的 URL
@@ -165,9 +142,9 @@ export default class Upload extends Component {
   };
 
   //  上传完成后的回调
-  onChange = async () => {
-    if(_isFunction(this.props.onChange)) {
-      await this.props.onChange(this.state.files);
+  onComplete = async () => {
+    if(_isFunction(this.props.onComplete)) {
+      await this.props.onComplete(this.state.files);
     }
   };
 
@@ -210,3 +187,6 @@ export default class Upload extends Component {
     );
   }
 }
+
+Upload.propTypes = propTypes;
+Upload.defaultProps = defaultProps;

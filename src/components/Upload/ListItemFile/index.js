@@ -2,6 +2,7 @@ import React, { PureComponent, Fragment } from 'react';
 import ListItem from 'antd-mobile/lib/list/ListItem';
 import Icon from 'antd-mobile/lib/icon';
 
+import PT from 'prop-types';
 import _isFunction from 'lodash/isFunction';
 import cs from 'classnames';
 
@@ -48,3 +49,9 @@ export default class ListItemFile extends PureComponent {
     );
   }
 }
+
+ListItemFile.propTypes = {
+  file: PT.object.isRequired,
+  onRemove: PT.func,
+  onClickFile: PT.func,
+};
