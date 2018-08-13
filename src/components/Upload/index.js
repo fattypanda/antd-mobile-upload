@@ -12,6 +12,7 @@ import _omit from 'lodash/omit';
 import _set from 'lodash/set';
 import _map from 'lodash/map';
 import _uniqueId from 'lodash/uniqueId';
+import _remove from 'lodash/remove';
 import _isFunction from 'lodash/isFunction';
 
 import './style/index';
@@ -148,6 +149,19 @@ export default class Upload extends Component {
     }
   };
 
+  //  点击删除的回调
+  onRemove = async (file = {}, e = {}) => {
+    const { uid = null } = file;
+    if (uid) {
+      const files = _remove(this.state.files, file => file.uid !== uid);
+      await this.setState({ files });
+      await this.onComplete();
+      if (_isFunction(this.props.onRemove)) {
+        this.props.onRemove(file, e);
+      }
+    }
+  };
+
   //  是否超出文件大小
   isMatchSize = (file = {}) => {
     const { size = null } = this.props;
@@ -173,7 +187,14 @@ export default class Upload extends Component {
       <div className={'antd-mobile-upload'}>
         <List>
           {Array.isArray(files) && files.map((file = {}, index) => {
-            return (<ListItemFile {...file} key={index}/>);
+            return (
+              <ListItemFile
+                key={index}
+                {...file}
+                onRemove={this.onRemove}
+                onClickFile={this.onClickFile}
+              />
+            );
           })}
           <RcUpload
             {...rcUploadProps}
