@@ -1,5 +1,5 @@
 import React, { PureComponent } from 'react';
-import Upload from 'src/components/UploadES';
+import Upload from 'src/components/Upload';
 
 export default class PageUpload extends PureComponent {
 
