@@ -3,8 +3,8 @@ import ListItem from 'antd-mobile/lib/list/ListItem';
 import Button from 'antd-mobile/lib/button';
 
 const noop = () => {};
-const extra = (<Button size={'small'} type={'primary'} onClick={e => e.target.click()}>上传</Button>);
-const children = (<ListItem extra={extra}>{''}</ListItem>);
+const extra = <Button size={'small'} type={'primary'} onClick={e => e.target.click()}>上传</Button>;
+const children = <ListItem extra={extra}>{''}</ListItem>;
 
 const RcUpload = {
   component: 'span',

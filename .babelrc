@@ -1,0 +1,23 @@
+{
+  "presets": [ "react", "es2015", "stage-0" ],
+  "plugins": [
+    "transform-react-jsx",
+    ["transform-runtime", {
+      "helpers": false,
+      "polyfill": false,
+      "regenerator": true,
+      "moduleName": "babel-runtime"
+    }]
+  ],
+  "ignore": [
+    "src/App.css",
+    "src/App.js",
+    "src/App.test.js",
+    "src/index.css",
+    "src/index.js",
+    "src/logo.svg",
+    "src/registerServiceWorker.js",
+    "src/examples"
+  ],
+  "sourceMaps": "both"
+}
